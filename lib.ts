@@ -1,4 +1,4 @@
-import { request, gql } from "https://esm.sh/graphql-request@5.2.0"
+import { GraphQLClient, gql } from "https://esm.sh/graphql-request@5.2.0"
 
 const query = gql`query GetEmail($login: String!) {
   user(login: $login) {
@@ -33,11 +33,14 @@ const query = gql`query GetEmail($login: String!) {
   }
 }`
 
-export async function getEmail(login: string, token = Deno.env.get("PERSONAL_ACCESS_TOKEN")) {
-  return await request("https://api.github.com/graphql", query, {
-    login,
+export async function getEmail(login: string, token: string) {
+  const graphQLClient = new GraphQLClient("https://api.github.com/graphql", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `bearer ${token}`,
     },
+  })
+  
+  return await graphQLClient.request(query, {
+    login,
   })
 }
