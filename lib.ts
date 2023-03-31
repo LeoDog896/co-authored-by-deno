@@ -5,6 +5,7 @@ const query = gql`query GetEmail($login: String!) {
   user(login: $login) {
     login
     name
+    databaseId
     repositories(
       first: 1
       isFork: false
@@ -39,6 +40,7 @@ const schema = z.object({
   user: z.object({
     login: z.string(),
     name: z.string().optional(),
+    databaseId: z.number(),
     repositories: z.object({
       edges: z.array(
         z.object({
@@ -71,10 +73,6 @@ interface UserData {
   email: string;
   preferredName: string;
   login: string;
-  commit: {
-    messageHeadline: string;
-    url: string;
-  };
 }
 
 export async function getEmail(
@@ -93,14 +91,15 @@ export async function getEmail(
     }),
   );
 
+  const hasCommit = data.user.repositories.edges.length > 0
+
   const commit =
-    data.user.repositories.edges[0].node.defaultBranchRef.target.history
-      .edges[0].node;
+    hasCommit ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
+      .edges[0].node : null;
 
   return {
     login: data.user.login,
-    email: commit.author.email,
-    preferredName: data.user.name || data.user.login,
-    commit,
+    email: commit?.author.email || `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
+    preferredName: data.user.name || data.user.login
   };
 }
