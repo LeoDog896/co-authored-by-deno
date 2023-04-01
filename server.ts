@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.182.0/http/server.ts";
-import "https://deno.land/std@0.181.0/dotenv/load.ts";
+import "https://deno.land/std@0.182.0/dotenv/load.ts";
 import { getCoAuthoredBy } from "./lib.ts";
 
 const PERSONAL_ACCESS_TOKEN = Deno.env.get("PERSONAL_ACCESS_TOKEN");
