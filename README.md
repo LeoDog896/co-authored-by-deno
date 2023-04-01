@@ -2,6 +2,18 @@
 
 deno deploy function for co-authored-by.
 
+The site is deployed on `https://co-authored-by.deno.dev`. Usage:
+
+```bash
+curl https://co-authored-by.deno.dev/username
+```
+
+for example:
+
+```bash
+curl https://co-authored-by.deno.dev/LeoDog896
+```
+
 ## how does the API grab emails?
 
 It does it in 4 steps, with fallback to the next step if the previous one fails.

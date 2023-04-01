@@ -78,38 +78,47 @@ interface UserData {
 export async function getEmail(
   login: string,
   token: string,
-): Promise<UserData> {
+): Promise<UserData | null> {
   const graphQLClient = new GraphQLClient("https://api.github.com/graphql", {
     headers: {
       Authorization: `bearer ${token}`,
     },
   });
 
-  const data = schema.parse(
-    await graphQLClient.request(query, {
+  let rawRequest: unknown;
+
+  try {
+    rawRequest = await graphQLClient.request(query, {
       login,
-    }),
+    })
+  } catch {
+    return null;
+  }
+
+  const data = schema.parse(
+    rawRequest
   );
 
-  const hasCommit = data.user.repositories.edges.length > 0;
+  const hasCommit = data.user.repositories.edges.length > 0
 
-  const commit = hasCommit
-    ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
-      .edges[0].node
-    : null;
+  const commit =
+    hasCommit ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
+      .edges[0].node : null;
 
   return {
     login: data.user.login,
-    email: commit?.author.email ||
-      `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
-    preferredName: data.user.name || data.user.login,
+    email: commit?.author.email || `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
+    preferredName: data.user.name || data.user.login
   };
 }
 
 export async function getCoAuthoredBy(
   login: string,
   token: string,
-): Promise<string> {
+): Promise<string | null> {
   const data = await getEmail(login, token);
+  if (!data) {
+    return null;
+  }
   return `Co-authored-by: ${data.preferredName} <${data.email}>`;
 }
