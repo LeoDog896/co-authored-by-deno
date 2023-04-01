@@ -1,6 +1,6 @@
 // the cli module enables local testing of the email fetching logic
 import "https://deno.land/std@0.181.0/dotenv/load.ts";
-import { getEmail } from "./lib.ts";
+import { getCoAuthoredBy } from "./lib.ts";
 
 const login = Deno.args[0];
 
@@ -16,6 +16,4 @@ if (!token) {
   Deno.exit(1);
 }
 
-const data = await getEmail(login, token);
-
-console.log(`Co-authored-by: ${data.preferredName} <${data.email}>`);
+console.log(await getCoAuthoredBy(login, token));

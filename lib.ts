@@ -91,15 +91,25 @@ export async function getEmail(
     }),
   );
 
-  const hasCommit = data.user.repositories.edges.length > 0
+  const hasCommit = data.user.repositories.edges.length > 0;
 
-  const commit =
-    hasCommit ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
-      .edges[0].node : null;
+  const commit = hasCommit
+    ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
+      .edges[0].node
+    : null;
 
   return {
     login: data.user.login,
-    email: commit?.author.email || `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
-    preferredName: data.user.name || data.user.login
+    email: commit?.author.email ||
+      `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
+    preferredName: data.user.name || data.user.login,
   };
+}
+
+export async function getCoAuthoredBy(
+  login: string,
+  token: string,
+): Promise<string> {
+  const data = await getEmail(login, token);
+  return `Co-authored-by: ${data.preferredName} <${data.email}>`;
 }
