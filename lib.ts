@@ -90,25 +90,27 @@ export async function getEmail(
   try {
     rawRequest = await graphQLClient.request(query, {
       login,
-    })
+    });
   } catch {
     return null;
   }
 
   const data = schema.parse(
-    rawRequest
+    rawRequest,
   );
 
-  const hasCommit = data.user.repositories.edges.length > 0
+  const hasCommit = data.user.repositories.edges.length > 0;
 
-  const commit =
-    hasCommit ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
-      .edges[0].node : null;
+  const commit = hasCommit
+    ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
+      .edges[0].node
+    : null;
 
   return {
     login: data.user.login,
-    email: commit?.author.email || `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
-    preferredName: data.user.name || data.user.login
+    email: commit?.author.email ||
+      `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
+    preferredName: data.user.name || data.user.login,
   };
 }
 

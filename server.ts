@@ -4,6 +4,14 @@ import { getCoAuthoredBy } from "./lib.ts";
 
 const PERSONAL_ACCESS_TOKEN = Deno.env.get("PERSONAL_ACCESS_TOKEN");
 
+const headers = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Origin, X-Requested-With, Content-Type, Accept, Range",
+  "content-type": "text/plain",
+};
+
 if (!PERSONAL_ACCESS_TOKEN) {
   throw new Error("Please provide a GitHub personal access token");
 }
@@ -19,7 +27,7 @@ serve(async (request) => {
   if (!login) {
     return new Response("Please provide a GitHub login", {
       status: 400,
-      headers: { "content-type": "text/plain" },
+      headers,
     });
   }
 
@@ -29,13 +37,13 @@ serve(async (request) => {
     if (data === undefined) {
       return new Response("Not found", {
         status: 404,
-        headers: { "content-type": "text/plain" },
+        headers,
       });
     }
 
     if (timestamp + cacheDuration > Date.now()) {
       return new Response(data, {
-        headers: { "content-type": "text/plain" },
+        headers,
       });
     }
   }
@@ -47,13 +55,13 @@ serve(async (request) => {
 
     return new Response("Not found", {
       status: 404,
-      headers: { "content-type": "text/plain" },
+      headers,
     });
   }
-  
+
   cache[login] = [Date.now(), coAuthoredBy];
 
   return new Response(coAuthoredBy, {
-    headers: { "content-type": "text/plain" },
+    headers,
   });
 });
