@@ -19,8 +19,6 @@ const query = gql`query GetEmail($login: String!) {
                 history(first: 1) {
                   edges {
                     node {
-                      messageHeadline
-                      url
                       author {
                         email
                       }
@@ -51,8 +49,6 @@ const schema = z.object({
                   edges: z.array(
                     z.object({
                       node: z.object({
-                        messageHeadline: z.string(),
-                        url: z.string(),
                         author: z.object({
                           email: z.string(),
                         }),
