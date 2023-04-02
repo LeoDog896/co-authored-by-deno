@@ -39,7 +39,7 @@ const query = gql`query GetEmail($login: String!) {
 const schema = z.object({
   user: z.object({
     login: z.string(),
-    name: z.string().optional(),
+    name: z.string().nullable(),
     databaseId: z.number(),
     repositories: z.object({
       edges: z.array(
