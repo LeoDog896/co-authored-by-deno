@@ -1,7 +1,6 @@
-import { gql, GraphQLClient } from "https://esm.sh/graphql-request@5.2.0";
 import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
 
-const query = gql`query GetEmail($login: String!) {
+const query = `query GetEmail($login: String!) {
   user(login: $login) {
     login
     name
@@ -75,24 +74,22 @@ export async function getEmail(
   login: string,
   token: string,
 ): Promise<UserData | null> {
-  const graphQLClient = new GraphQLClient("https://api.github.com/graphql", {
+  const request = await fetch("https://api.github.com/graphql", {
+    method: "POST",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `bearer ${token}`,
     },
-  });
-
-  let rawRequest: unknown;
-
-  try {
-    rawRequest = await graphQLClient.request(query, {
-      login,
-    });
-  } catch {
-    return null;
-  }
+    body: JSON.stringify({
+      query,
+      variables: {
+        login,
+      },
+    })
+  }).then((res) => res.json()).then((res) => res.data);
 
   const data = schema.parse(
-    rawRequest,
+    request,
   );
 
   const hasCommit = data.user.repositories.edges.length > 0;
