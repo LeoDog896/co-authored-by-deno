@@ -19,6 +19,9 @@ const query = `query GetEmail($login: String!) {
                   edges {
                     node {
                       author {
+                        user {
+                          databaseId
+                        }
                         email
                       }
                     }
@@ -49,6 +52,9 @@ const schema = z.object({
                     z.object({
                       node: z.object({
                         author: z.object({
+                          user: z.object({
+                            databaseId: z.number(),
+                          }).nullable(),
                           email: z.string(),
                         }),
                       }),
@@ -99,9 +105,11 @@ export async function getEmail(
       .edges[0].node
     : null;
 
+  const commitEmail = commit?.author.user?.databaseId === data.user.databaseId ? commit?.author.email : null;
+
   return {
     login: data.user.login,
-    email: commit?.author.email ||
+    email: commitEmail ||
       `${data.user.databaseId}+${data.user.login}@users.noreply.github.com`,
     preferredName: data.user.name || data.user.login,
   };
