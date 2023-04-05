@@ -7,8 +7,8 @@ const query = `query GetEmail($login: String!) {
     databaseId
     repositories(
       first: 1
-      isFork: false
-      orderBy: {field: CREATED_AT, direction: DESC}
+      ownerAffiliations: OWNER
+      orderBy: {field: UPDATED_AT, direction: DESC}
     ) {
       edges {
         node {
