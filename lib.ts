@@ -56,7 +56,7 @@ const schema = z.object({
                   ),
                 }),
               }),
-            }),
+            }).nullable(),
           }),
         }),
       ),
@@ -95,7 +95,7 @@ export async function getEmail(
   const hasCommit = data.user.repositories.edges.length > 0;
 
   const commit = hasCommit
-    ? data.user.repositories.edges[0].node.defaultBranchRef.target.history
+    ? data.user.repositories.edges[0].node.defaultBranchRef?.target.history
       .edges[0].node
     : null;
 
