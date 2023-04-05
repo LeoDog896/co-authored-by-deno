@@ -1,5 +1,5 @@
 // the cli module enables local testing of the email fetching logic
-import "https://deno.land/std@0.181.0/dotenv/load.ts";
+import "https://deno.land/std@0.182.0/dotenv/load.ts";
 import { getCoAuthoredBy } from "./lib.ts";
 
 const login = Deno.args[0];
